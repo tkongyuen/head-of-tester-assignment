@@ -1,0 +1,349 @@
+{
+  "info": {
+    "_postman_id": "7b4c8f20-2d31-4c0a-9f21-8d6f4a3b2026",
+    "name": "Head Tester Assignment - JSONPlaceholder API Testing",
+    "description": "Eight API requests covering the assignment endpoints. JSONPlaceholder simulates write operations; changes are not persisted.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com",
+      "type": "string"
+    },
+    {
+      "key": "postId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "TC01 - Get All Posts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Retrieve all Posts and validate response array and required fields.",
+        "url": {
+          "raw": "{{baseUrl}}/posts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "pm.test(\"Response is an array\", () => pm.expect(data).to.be.an(\"array\"));",
+              "pm.test(\"Each Post has required fields and data types\", () => {",
+              "    data.forEach(post => {",
+              "        pm.expect(post).to.have.property(\"id\").that.is.a(\"number\");",
+              "        pm.expect(post).to.have.property(\"userId\").that.is.a(\"number\");",
+              "        pm.expect(post).to.have.property(\"title\").that.is.a(\"string\");",
+              "        pm.expect(post).to.have.property(\"body\").that.is.a(\"string\");",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC02 - Get Post by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Retrieve one Post by ID and validate the returned ID and fields.",
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "pm.test(\"Returned Post ID matches requested ID\", () => {",
+              "    pm.expect(String(data.id)).to.eql(pm.collectionVariables.get(\"postId\"));",
+              "});",
+              "pm.test(\"Post has required fields\", () => {",
+              "    [\"userId\", \"title\", \"body\"].forEach(field => pm.expect(data).to.have.property(field));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC03 - Get Comments by Post ID (Nested Route)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Retrieve Comments through nested Post route and verify each belongs to the requested Post.",
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}/comments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}",
+            "comments"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "const requestedPostId = Number(pm.collectionVariables.get(\"postId\"));",
+              "pm.test(\"Response is an array\", () => pm.expect(data).to.be.an(\"array\"));",
+              "pm.test(\"All comments belong to requested Post\", () => {",
+              "    data.forEach(comment => {",
+              "        pm.expect(comment.postId).to.eql(requestedPostId);",
+              "        [\"id\", \"name\", \"email\", \"body\"].forEach(field => pm.expect(comment).to.have.property(field));",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC04 - Get Comments by Query Parameter",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Retrieve Comments filtered by postId and verify returned postId values.",
+        "url": {
+          "raw": "{{baseUrl}}/comments?postId={{postId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "comments"
+          ],
+          "query": [
+            {
+              "key": "postId",
+              "value": "{{postId}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "const requestedPostId = Number(pm.collectionVariables.get(\"postId\"));",
+              "pm.test(\"Response is an array\", () => pm.expect(data).to.be.an(\"array\"));",
+              "pm.test(\"All comments match the postId filter\", () => {",
+              "    data.forEach(comment => pm.expect(comment.postId).to.eql(requestedPostId));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC05 - Create Post",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Create a Post and validate response fields against the request.",
+        "url": {
+          "raw": "{{baseUrl}}/posts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"QA Testing\",\n  \"body\": \"API Testing Assignment\",\n  \"userId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+              "const data = pm.response.json();",
+              "pm.test(\"Response contains a generated Post ID\", () => pm.expect(data.id).to.exist);",
+              "pm.test(\"Response fields match the request\", () => {",
+              "    pm.expect(data.title).to.eql(\"QA Testing\");",
+              "    pm.expect(data.body).to.eql(\"API Testing Assignment\");",
+              "    pm.expect(data.userId).to.eql(1);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC06 - Update Post (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Update the Post representation and validate returned values.",
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 1,\n  \"title\": \"Updated QA Testing\",\n  \"body\": \"Updated API Testing Assignment\",\n  \"userId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "pm.test(\"Response matches submitted Post data\", () => {",
+              "    pm.expect(data.id).to.eql(1);",
+              "    pm.expect(data.title).to.eql(\"Updated QA Testing\");",
+              "    pm.expect(data.body).to.eql(\"Updated API Testing Assignment\");",
+              "    pm.expect(data.userId).to.eql(1);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC07 - Partial Update Post (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Update only the title field and validate returned title.",
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Partial Update QA\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "pm.test(\"Title is updated to requested value\", () => pm.expect(data.title).to.eql(\"Partial Update QA\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC08 - Delete Post",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "Send a delete request and validate the JSONPlaceholder response. Deletions are not persisted.",
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Response is an object\", () => pm.expect(pm.response.json()).to.be.an(\"object\"));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
