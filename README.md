@@ -1,84 +1,81 @@
-# Automation Testing — Robot Framework
+# Head Tester Practical Assignment 2026
 
-## Objective
-ทดสอบ Order → เลือก Package → เลือกช่องทางชำระเงิน → ตรวจสอบยอดเงิน โดยใช้ Robot Framework และ SeleniumLibrary
+This repository contains my practical assessment for the **Head Tester Position**.
 
-## Project structure
-```text
-03-automation-testing-using-robot-framework/
-├── README.md
-├── requirements.txt
-├── tests/
-│   └── order_payment.robot
-└── pages/
-    ├── OrderPage.resource
-    └── PaymentPage.resource
-```
+The project demonstrates my capabilities in Software Quality Assurance, QA Leadership, API Testing, and Test Automation, covering both strategic and technical aspects of software quality.
 
-## Test coverage
-- เลือก Package ด้วย Package ID
-- ตรวจสอบ Package Name ที่แสดง
-- เลือก QR หรือ Credit Card
-- ตรวจสอบยอดเงินให้ตรงกับ Package ที่เลือก
+## Project Structure
 
-## Prerequisites
-- Python ติดตั้งแล้ว
-- ติดตั้ง Browser ที่ต้องการทดสอบ เช่น Chrome, Firefox หรือ Edge
-- มี URL ของหน้า Order และข้อมูล/Locator ของหน้าเว็บจริง
-- เตรียม Test Environment และ Test Data ให้พร้อม
+The repository is organized into 3 main sections:
 
-## Install
-```bash
-pip install -r requirements.txt
-```
+| Folder | Description |
+|---|---|
+| `01-scenario-based/` | Scenario-based questions covering QA Leadership, Crisis Management, Incident Investigation, Team Management, and Process Improvement. |
+| `02-api-testing/` | REST API Testing using JSONPlaceholder, including Postman Collection, Environment, and API test scenarios. |
+| `03-automation-testing-using-robot-framework/` | Web Automation Testing using Robot Framework and SeleniumLibrary, applying Page Object Model (POM) and Cross-browser Testing. |
 
-## Configure before execution
-ตัวอย่างในไฟล์เป็นโครงสร้างเริ่มต้น ยังไม่สามารถรันกับระบบจริงได้จนกว่าจะกำหนดค่าให้ตรงกับเว็บไซต์:
-1. แก้ `${ORDER_URL}` ใน `tests/order_payment.robot`
-2. แก้ Package ID, Package Name และยอดเงินให้ตรงกับ Test Environment
-3. ตรวจสอบและแก้ CSS Selector ใน `pages/OrderPage.resource` และ `pages/PaymentPage.resource` ให้ตรงกับ HTML ของระบบ
-4. ตรวจสอบรูปแบบยอดเงินที่หน้าเว็บแสดง เช่น `990`, `990.00` หรือ `฿990.00` แล้วกำหนด Expected Amount ให้ตรงกัน
+## Folder Guide
 
-## Run tests
-Chrome:
-```bash
-robot --variable BROWSER:Chrome tests/order_payment.robot
-```
+### 01 — Scenario Based
 
-Firefox:
-```bash
-robot --variable BROWSER:Firefox tests/order_payment.robot
-```
+**Focus: QA Leadership & Quality Strategy**
 
-Edge:
-```bash
-robot --variable BROWSER:Edge tests/order_payment.robot
-```
+Contains responses to the three business scenarios:
 
-Robot Framework จะสร้าง `output.xml`, `log.html` และ `report.html` หลังรัน
+- Scenario 1: Crisis Management & Release Management
+- Scenario 2: Production Incident Investigation & Root Cause Analysis
+- Scenario 3: Team Delegation, Automation Strategy & QA Performance Metrics
 
-## POM
-แยก Locator และ Keyword ตามหน้าที่:
-- `OrderPage.resource`: เปิดหน้า Order, เลือก Package และตรวจสอบ Package Name
-- `PaymentPage.resource`: เลือกช่องทางชำระเงินและตรวจสอบยอดเงิน
+### 02 — API Testing
 
-การแยกส่วนช่วยให้แก้ไข Locator ที่เปลี่ยนตามหน้าเว็บได้โดยไม่ต้องแก้ Test Case ทุกจุด
+**Focus: API Test Design & Execution**
 
-## Cross-browser
-ใช้ตัวแปร `${BROWSER}` เพื่อเลือก Browser ตอนสั่งรัน โดยต้องติดตั้ง Browser และ WebDriver ที่รองรับในเครื่องหรือ CI Agent
+Contains API test scripts and supporting files for:
 
-## CI/CD approach
-ทำงานร่วมกับ Dev/DevOps เพื่อเตรียม Test Environment, URL, Test Data, Browser และ WebDriver จากนั้นตั้ง Pipeline ให้ทำงานเมื่อมี Code Commit:
-1. Checkout source code
-2. Build application
-3. Deploy ไปยัง Test Environment
-4. Run Robot Framework tests
-5. Publish `log.html`, `report.html` และ `output.xml`
-6. แจ้งผล Pass/Fail ให้ทีมที่เกี่ยวข้อง
+- GET Posts
+- GET Single Post
+- GET Post Comments
+- POST Create Post
+- PUT Update Post
+- PATCH Update Post
+- DELETE Post
 
-ควรกำหนดเงื่อนไข Pipeline ให้เหมาะกับทีม เช่น ให้ Smoke/Regression Automation ทำงานหลัง Build และ Deploy สำเร็จ โดยไม่ต้องรอ QA สั่งรันด้วยตนเอง
+Tools: Postman / JSONPlaceholder API
 
-## Notes / Limitations
-- URL, Package ID, Package Name, Amount และ CSS Selector ในตัวอย่างเป็นค่าตัวอย่าง/Placeholder ต้องแทนด้วยข้อมูลจริงก่อนใช้งาน
-- การรองรับ Cross-browser ต้องทดลองรันจริงบน Browser ที่องค์กรใช้ ไม่ใช่เพียงเปลี่ยนชื่อ Browser ในคำสั่ง
-- Test นี้ตรวจสอบยอดเงินที่หน้า Order/Payment แสดง ไม่ได้ยืนยันการตัดเงินจริงจากผู้ให้บริการชำระเงิน
+### 03 — Automation Testing
+
+**Focus: Web Test Automation**
+
+Contains automation scripts for the Order & Payment Flow:
+
+- Navigate to Order Page
+- Select Package
+- Select Payment Method (QR Code / Credit Card)
+- Verify Package Price
+
+Tools: Robot Framework / SeleniumLibrary
+
+Design Approach: Page Object Model (POM) and Cross-browser Testing.
+
+## How to Navigate
+
+To review the assessment, start with the following folders:
+
+1. Open `01-scenario-based/` to review QA Leadership and management approaches.
+2. Open `02-api-testing/` to review API test cases and Postman files.
+3. Open `03-automation-testing-using-robot-framework/` to review automation scripts and framework structure.
+
+## Key Competencies Demonstrated
+
+- QA Leadership & Team Management
+- Risk-based Testing & Quality Strategy
+- API Testing
+- Web Automation Testing
+- Cross-browser Testing
+- Test Framework Design
+- Process Improvement & Quality Metrics
+
+---
+
+**Author:** Head Tester Candidate  
+**Assessment:** Head Tester Practical Assignment 2026
